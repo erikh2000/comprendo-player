@@ -1,0 +1,50 @@
+@value colors: "ui/commonPalette.module.css";
+@value primary-brown, primary-dark-orange, primary-silver, background-content from colors;
+
+.app {
+    display:flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.appSection {
+    flex: 1 1 auto;
+    background-color: #f5f5f5;
+    border-color: #ddd;
+    border-width: 1px;
+    border-style: solid;
+    padding: .5rem;
+    font-size: 2rem;
+}
+
+.lessonName {
+    composes: appSection;
+    background-color: primary-brown;
+    text-align: center;
+    color: #ae6c18;
+    letter-spacing: .1rem;
+    max-height: 2rem;
+}
+
+.header {
+    composes: appSection;
+    background-color: primary-dark-orange;
+    max-height: 2rem;
+    padding-left: 2rem;
+}
+
+.line {
+    composes: appSection;
+    background-color: background-content;
+    padding-left: 2rem;
+    font-size: 1.8rem;
+}
+
+.prompt {
+    composes: appSection;
+    background-color: primary-silver;
+    text-align: center;
+    color: white;
+    max-height: 2rem;
+}
+

@@ -1,0 +1,9 @@
+.container {
+    margin: 2rem;
+}
+
+.lessonButton {
+    font-size: 1.5rem;
+    padding: 2rem;
+    width: 100%;
+}
