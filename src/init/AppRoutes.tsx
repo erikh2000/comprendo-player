@@ -6,7 +6,7 @@ import React from 'react';
 
 function AppRoutes() {
   return (
-    <BrowserRouter basename='/comprendo'>
+    <BrowserRouter basename='/'>
       <Routes>
         <Route path="" element={<HomeScreen />} />
         <Route path="lesson" element={<LessonScreen />} />
