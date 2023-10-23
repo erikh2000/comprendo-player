@@ -122,7 +122,7 @@ function _parseLineTextsFromSsml(ssml:string):string[] {
     const markEnd = segment.indexOf('>');
     if (markEnd === -1) continue;
     const mark = segment.substring(0, markEnd);
-    if (!mark.startsWith('name=\"')) continue;
+    if (!mark.startsWith('name="')) continue;
     const name = mark.substring(6);
     if (!name.startsWith('line')) continue;
     const lineAttributeEnd = name.indexOf('"');
