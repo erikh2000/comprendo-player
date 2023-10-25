@@ -3,6 +3,7 @@ import LessonLine from "./types/LessonLine";
 import LessonInputEvent from "./types/LessonInputEvent";
 
 import { loadMp3FromUrl } from 'sl-web-audio';
+import {httpToHttps} from "../common/urlUtil";
 
 enum MarkRowType {
   LINE, PRACTICE, INPUT
@@ -137,11 +138,13 @@ function _parseLineTextsFromSsml(ssml:string):string[] {
 async function _loadLessonJsonFromUrl(lessonUrl:string):Promise<{lessonName:string, mp3Url:string, marksUrl:string, lineTexts:string[]}> {
   const response = await fetch(lessonUrl);
   const jsonObject = await response.json();
-  const {mp3url:mp3Url, marksUrl, ssml, lessonName} = jsonObject;
+  let {mp3url:mp3Url, marksUrl, ssml, lessonName} = jsonObject;
   if (!mp3Url) throw Error(`No mp3Url in ${lessonUrl}.`);
   if (!marksUrl) throw Error(`No marksUrl in ${lessonUrl}.`);
   if (!ssml) throw Error(`No ssml in ${lessonUrl}.`);
   if (!lessonName) throw Error(`No lessonName in ${lessonUrl}.`);
+  mp3Url = httpToHttps(mp3Url); // TODO - delete this code after there are no lessons pointing to http.
+  marksUrl = httpToHttps(marksUrl);
   const lineTexts = _parseLineTextsFromSsml(ssml);
   return {lessonName, mp3Url, marksUrl, lineTexts};
 }
