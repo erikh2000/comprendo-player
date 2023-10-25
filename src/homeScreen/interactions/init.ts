@@ -1,5 +1,6 @@
 import LessonManifest from "persistence/types/LessonManifest";
 import {getLessonManifest, setLessonManifest} from "persistence/lessonManifest";
+import {httpToHttps} from "../../common/urlUtil";
 
 const S3_WEBSITE_URL = 'https://comprendo.seespacelabs.com/';
 const LESSON_MANIFEST_URL = `${S3_WEBSITE_URL}lessons/lesson-manifest.json`;
@@ -8,11 +9,22 @@ export type InitResults = {
   lessonManifest: LessonManifest
 }
 
+function _fixUrls(lessonManifest:LessonManifest):LessonManifest { // TODO delete after no lessons with http:// remain
+  return {
+    lessons: lessonManifest.lessons.map(lesson => {
+      return {
+        name: lesson.name,
+        url: httpToHttps(lesson.url)
+      }
+    })
+  }
+}
+
 async function _getRemoteLessonManifest():Promise<LessonManifest|null> {
   const remoteManifest = await fetch(LESSON_MANIFEST_URL);
   if (remoteManifest.status === 404) return null;
-  const remoteManifestJson = await remoteManifest.json();
-  return remoteManifestJson as LessonManifest;
+  const remoteManifestJson = (await remoteManifest.json()) as LessonManifest;
+  return _fixUrls(remoteManifestJson);
 }
 
 function _areLessonManifestsEqual(a:LessonManifest, b:LessonManifest):boolean {
