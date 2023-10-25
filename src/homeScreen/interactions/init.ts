@@ -1,7 +1,7 @@
 import LessonManifest from "persistence/types/LessonManifest";
 import {getLessonManifest, setLessonManifest} from "persistence/lessonManifest";
 
-const S3_WEBSITE_URL = 'http://comprendo.seespacelabs.com/';
+const S3_WEBSITE_URL = 'https://comprendo.seespacelabs.com/';
 const LESSON_MANIFEST_URL = `${S3_WEBSITE_URL}lessons/lesson-manifest.json`;
 
 export type InitResults = {
