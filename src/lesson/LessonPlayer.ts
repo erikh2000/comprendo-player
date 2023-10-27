@@ -3,7 +3,7 @@ import LessonInputEvent from "./types/LessonInputEvent";
 import {loadLesson} from "./lessonLoadUtil";
 import SpeechHandler, {InputResult} from "speech/SpeechHandler";
 
-import { playAudioBufferRange, IPlayAudioEndedCallback } from 'sl-web-audio';
+import { playAudioBufferRange, stopAll, IPlayAudioEndedCallback } from 'sl-web-audio';
 
 enum State {
   UNLOADED,
@@ -13,6 +13,8 @@ enum State {
   WAITING_FOR_PRACTICE,
   FINISHED
 }
+
+const BEFORE_FIRST_LINE_NO = -1;
 
 export type TextEventCallback = (text:string) => void;
 
@@ -29,16 +31,18 @@ class LessonPlayer {
   private readonly _onLine:TextEventCallback;
   private readonly _onInput:TextEventCallback;
   private readonly _onHeader:TextEventCallback;
+  private readonly _onLessonEnded:() => void;
   
-  constructor(speechHandler:SpeechHandler, onHeader:TextEventCallback, onLine:TextEventCallback, onInput:TextEventCallback) {
+  constructor(speechHandler:SpeechHandler, onHeader:TextEventCallback, onLine:TextEventCallback, onInput:TextEventCallback, onLessonEnded:() => void) {
     this._state = State.UNLOADED;
     this._lesson = null;
     this._speechHandler = speechHandler;
-    this._currentLineNo = -1;
+    this._currentLineNo = BEFORE_FIRST_LINE_NO;
     this._currentInputEvent = null;
     this._onHeader = onHeader;
     this._onLine = onLine;
     this._onInput = onInput;
+    this._onLessonEnded = onLessonEnded;
     this._onInputEnded = this._onInputEnded.bind(this);
     this._onPracticeEnded = this._onPracticeEnded.bind(this);
     this._onLineAudioEnded = this._onLineAudioEnded.bind(this);
@@ -73,6 +77,12 @@ class LessonPlayer {
     this._onInput('');
     this._currentInputEvent = null;
   }
+
+  private _finishLesson() {
+    this._onInput('');
+    this._state = State.FINISHED;
+    this._onLessonEnded();
+  }
   
   private _onInputEnded(inputResult:InputResult) {
     if (!this._currentInputEvent || !this._lesson) throw Error('Unexpected');
@@ -83,9 +93,8 @@ class LessonPlayer {
       case InputResult.SILENCE_TIMEOUT: if (this._currentInputEvent.silenceLineNo) nextLineNo = this._currentInputEvent.silenceLineNo; break;
       default: throw Error('Unexpected');
     }
-    if (nextLineNo === -1) {
-      this._state = State.FINISHED;
-      this._onInput('');
+    if (nextLineNo === BEFORE_FIRST_LINE_NO) {
+      this._finishLesson();
       return;
     }
     this._currentLineNo = nextLineNo;
@@ -96,6 +105,8 @@ class LessonPlayer {
 
   private _onLineAudioEnded(_source:AudioBufferSourceNode) {
     if (!this._lesson) throw Error('Unexpected');
+    
+    if (this._state === State.PAUSED) return;
     
     if (this._lesson.practiceAfterLineNos.includes(this._currentLineNo)) {
       this._onInput('Responde, por favor.');
@@ -120,8 +131,7 @@ class LessonPlayer {
     if (!this._lesson) throw Error('Unexpected');
     
     if (++this._currentLineNo >= this._lesson.lines.length) {
-      this._onInput('');
-      this._state = State.FINISHED;
+      this._finishLesson();
       return;
     }
     this._playLineAudio(this._currentLineNo, this._onLineAudioEnded.bind(this));
@@ -132,11 +142,25 @@ class LessonPlayer {
   async start(lessonUrl:string) {
     this._lesson = await loadLesson(lessonUrl);
     if (!this._speechHandler?.isInitialized) throw Error('SpeechHandler not initialized.');
-    this._currentLineNo = -1;
+    this._currentLineNo = BEFORE_FIRST_LINE_NO;
     this._goNextLine();
   }
   
   get lessonName():string { return this._lesson?.name || ''; }
+  
+  pause() {
+    stopAll();
+    this._speechHandler.stopListenPulse();
+    this._speechHandler.disable();
+    this._state = State.PAUSED;
+  }
+  
+  resume() {
+    if (--this._currentLineNo < BEFORE_FIRST_LINE_NO) this._currentLineNo = BEFORE_FIRST_LINE_NO;
+    this._speechHandler.enable();
+    this._state = State.PLAYING;
+    this._goNextLine();
+  }
 }
 
 export default LessonPlayer;

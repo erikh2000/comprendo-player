@@ -1,6 +1,6 @@
 import LessonManifest from "persistence/types/LessonManifest";
 import {getLessonManifest, setLessonManifest} from "persistence/lessonManifest";
-import {httpToHttps} from "../../common/urlUtil";
+import {httpToHttps} from "common/urlUtil";
 
 const S3_WEBSITE_URL = 'https://comprendo.seespacelabs.com/';
 const LESSON_MANIFEST_URL = `${S3_WEBSITE_URL}lessons/lesson-manifest.json`;

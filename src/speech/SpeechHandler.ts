@@ -157,6 +157,11 @@ class SpeechHandler {
     this._startListenPulse();
     this._restartSilenceTimeout();
   }
+  
+  stopListenPulse() {
+    this._cancelSilenceTimeout();
+    this._stopListenPulse();
+  }
 
   enable() {
     if (!this._recognizer || !this.isInitialized) throw Error('Unexpected');

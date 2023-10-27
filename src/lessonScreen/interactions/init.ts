@@ -7,7 +7,7 @@ let speechHandler:SpeechHandler|null = null;
 export type InitResults = {
   lessonName:string;
 }
-export async function init(setLastHeaderText:Function, setActiveLineText:Function, setActivePromptText:Function):Promise<InitResults> {
+export async function init(setLastHeaderText:Function, setActiveLineText:Function, setActivePromptText:Function, onLessonEnded:() => void):Promise<InitResults> {
   const initResults = { lessonName: 'Lección' };
   
   if (!speechHandler) {
@@ -19,7 +19,8 @@ export async function init(setLastHeaderText:Function, setActiveLineText:Functio
   await initLesson(speechHandler, 
     (text) => setLastHeaderText(text),
     (text) => setActiveLineText(text),
-    (text) => setActivePromptText(text)
+    (text) => setActivePromptText(text),
+    onLessonEnded
   );
   initResults.lessonName = await startLesson();
   
