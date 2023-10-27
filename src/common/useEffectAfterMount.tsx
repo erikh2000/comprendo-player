@@ -4,10 +4,14 @@ import {DependencyList, EffectCallback, useEffect, useRef} from "react";
 
 function useEffectAfterMount(effect:EffectCallback, deps:DependencyList|undefined) {
   const mounted = useRef<boolean>(false);
+  
   useEffect(() => {
-    if (!mounted.current) return effect();
-    mounted.current = true;
+    if (mounted.current) return effect();
   }, deps); // eslint-disable-line react-hooks/exhaustive-deps
+  
+  useEffect(() => {
+    mounted.current = true;
+  }, []);
 }
 
 export default useEffectAfterMount;
