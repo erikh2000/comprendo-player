@@ -1,7 +1,7 @@
 import styles from './HomeScreen.module.css';
 import logo from './images/comprendoLogo.png';
 import { startLesson } from './interactions/lessonInteractions';
-import useEffectAfterMount from "common/useEffectAfterMount";
+import useEffectOnce from "common/useEffectOnce";
 import { init, InitResults } from './interactions/init';
 import LessonManifest from "persistence/types/LessonManifest";
 import AvailableLessonList from "./AvailableLessonList";
@@ -13,7 +13,7 @@ function HomeScreen() {
   const [lessonManifest, setLessonManifest] = useState<LessonManifest|null>(null);
   const navigate = useNavigate();
   
-  useEffectAfterMount(() => {
+  useEffectOnce(() => {
     init().then((initResults:InitResults) => {
       setLessonManifest(initResults.lessonManifest);
     });

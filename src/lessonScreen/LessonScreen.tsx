@@ -1,6 +1,6 @@
 import styles from './LessonScreen.module.css';
 import { init } from './interactions/init';
-import useEffectAfterMount from "common/useEffectAfterMount";
+import useEffectOnce from "common/useEffectOnce";
 import PauseDialog from "./dialogs/PauseDialog";
 import {exit, pause, resume} from "./interactions/pauseInteractions";
 
@@ -18,7 +18,7 @@ function LessonScreen() {
   
   const _exit = () => { exit(navigate); };
   
-  useEffectAfterMount(() => {
+  useEffectOnce(() => {
     if (!theAudioContext()) { navigate('/'); return; }
     init(setLastHeaderText, setActiveLineText, setActivePromptText, _exit).then((initResults) => {
       setLessonName(initResults.lessonName);
