@@ -2,7 +2,7 @@ import styles from './HomeScreen.module.css';
 import logo from './images/comprendoLogo.png';
 import { startLesson } from './interactions/lessonInteractions';
 import useEffectOnce from "common/useEffectOnce";
-import { init, InitResults } from './interactions/init';
+import {init, InitResults, startLessonManifestRefreshInterval} from './interactions/init';
 import LessonManifest from "persistence/types/LessonManifest";
 import AvailableLessonList from "./AvailableLessonList";
 
@@ -16,6 +16,7 @@ function HomeScreen() {
   useEffectOnce(() => {
     init().then((initResults:InitResults) => {
       setLessonManifest(initResults.lessonManifest);
+      startLessonManifestRefreshInterval(setLessonManifest);
     });
   }, [setLessonManifest]);
   

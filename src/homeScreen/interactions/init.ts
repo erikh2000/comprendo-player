@@ -27,6 +27,18 @@ async function _getRemoteLessonManifest():Promise<LessonManifest|null> {
   return _fixUrls(remoteManifestJson);
 }
 
+const REFRESH_INTERVAL = 1000 * 10;
+export function startLessonManifestRefreshInterval(setLessonManifest:Function) {
+  let busy = false;
+  setInterval(async () => {
+    if (busy) return;
+    busy = true;
+    const remoteManifest = await _getRemoteLessonManifest();
+    if (remoteManifest) setLessonManifest(remoteManifest);
+    busy = false;
+  }, REFRESH_INTERVAL);
+}
+
 function _areLessonManifestsEqual(a:LessonManifest, b:LessonManifest):boolean {
   if (a.lessons.length !== b.lessons.length) return false;
   for (let i = 0; i < a.lessons.length; i++) {
