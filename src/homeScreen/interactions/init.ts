@@ -27,7 +27,7 @@ async function _getRemoteLessonManifest():Promise<LessonManifest|null> {
   return _fixUrls(remoteManifestJson);
 }
 
-const REFRESH_INTERVAL = 1000 * 10;
+const REFRESH_INTERVAL = 5 * 1000 * 60;
 export function startLessonManifestRefreshInterval(setLessonManifest:Function) {
   let busy = false;
   setInterval(async () => {
