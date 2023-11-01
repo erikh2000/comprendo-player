@@ -25,6 +25,7 @@ function HomeScreen() {
   return (
     <div className={styles.homeScreen}>
       <img className={styles.logo} src={logo} alt="Comprendo Logo" />
+      <div className={styles.about}>Esta app es de código abierto disponible en <a href="https://github.com/erikh2000/comprendo-player">Github</a>. Usa reconocimiento de voz local sin enviar ni almacenar tus palabras.</div>
       <div className={styles.lessonPane}>
         <AvailableLessonList lessonManifest={lessonManifest} onSelectLesson={(lessonUrl) => startLesson(lessonUrl, navigate)} />
       </div>
